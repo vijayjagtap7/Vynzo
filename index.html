@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b0d12">
+<title>Vynzo — 8K Video Tools</title>
+<meta name="description" content="Vynzo is a simple, modern video tools website with a clean mobile-friendly interface.">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b0d12;color:#fff;font-family:Arial,sans-serif}
+header{padding:20px 6%;border-bottom:1px solid #262833;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:25px;font-weight:800;letter-spacing:1px}
+.logo span,h1 span{color:#ff414b}
+.tag{color:#aaa;font-size:12px}
+main{max-width:620px;margin:55px auto;padding:20px;text-align:center}
+.pill{display:inline-block;padding:8px 13px;border:1px solid #51262c;background:#211519;border-radius:30px;color:#ff737b;font-size:11px;letter-spacing:1px}
+h1{font-size:clamp(34px,8vw,48px);line-height:1.15;margin:24px 0 14px}
+.desc{color:#a4a6b0;line-height:1.7;font-size:14px}
+.panel{margin-top:28px;padding:18px;background:#14161d;border:1px solid #292c35;border-radius:18px;text-align:left}
+label{display:block;font-size:13px;margin-bottom:10px;color:#ddd}
+input{width:100%;padding:16px;border:1px solid #353844;border-radius:11px;background:#0c0e13;color:white;font-size:14px;outline:none}
+input:focus{border-color:#ff414b}
+button{width:100%;padding:15px;margin-top:13px;border:0;border-radius:11px;background:#ff414b;color:white;font-size:15px;font-weight:bold}
+.notice{display:none;margin-top:13px;padding:12px;border-radius:10px;background:#242630;color:#eee;font-size:13px;line-height:1.6}
+h3{font-size:15px;text-align:left;margin:25px 0 12px}
+.qualities{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.quality{padding:15px 5px;border:1px solid #30323c;background:#14161d;border-radius:12px}
+.quality strong{display:block;font-size:15px}
+.quality small{display:block;color:#aaa;margin-top:5px}
+.features{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;color:#aaa;font-size:12px;margin-top:24px}
+footer{text-align:center;color:#777;font-size:12px;padding:25px}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">VYN<span>ZO</span></div>
+  <div class="tag">VIDEO TOOLS</div>
+</header>
+<main>
+  <div class="pill">✦ SIMPLE • CLEAN • MODERN</div>
+  <h1>Your Videos.<br><span>Your Quality.</span></h1>
+  <p class="desc">A simple place to explore video tools and quality options in one clean interface.</p>
+
+  <section class="panel">
+    <label for="videoUrl">Video URL</label>
+    <input id="videoUrl" type="url" placeholder="Paste an authorized video URL">
+    <button id="continueBtn">Continue →</button>
+    <div class="notice" id="notice" role="status"></div>
+  </section>
+
+  <h3>Explore video quality</h3>
+  <div class="qualities">
+    <div class="quality"><strong>720p</strong><small>HD</small></div>
+    <div class="quality"><strong>1080p</strong><small>Full HD</small></div>
+    <div class="quality"><strong>1440p</strong><small>2K</small></div>
+    <div class="quality"><strong>2160p</strong><small>4K</small></div>
+    <div class="quality"><strong>4320p</strong><small>8K</small></div>
+    <div class="quality"><strong>Info</strong><small>Video details</small></div>
+  </div>
+  <div class="features">
+    <span>✓ Mobile friendly</span>
+    <span>✓ Simple interface</span>
+    <span>✓ Clean design</span>
+  </div>
+  <p class="desc" style="font-size:12px;margin-top:25px">Only process videos you own or are authorized to download. Available quality depends on the source.</p>
+</main>
+<footer>© 2026 Vynzo · Video Tools</footer>
+<script>
+const input=document.getElementById('videoUrl');
+const notice=document.getElementById('notice');
+document.getElementById('continueBtn').addEventListener('click',()=>{
+  notice.style.display='block';
+  if(!input.value.trim()){
+    notice.textContent='Please enter a video URL first.';
+    return;
+  }
+  try{
+    const u=new URL(input.value.trim());
+    if(!['https:','http:'].includes(u.protocol))throw Error();
+    notice.textContent='URL format looks valid. Video processing requires a supported, authorized backend.';
+  }catch{
+    notice.textContent='Please enter a valid URL.';
+  }
+});
+</script>
+</body>
+</html>
