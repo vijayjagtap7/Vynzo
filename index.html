@@ -5,117 +5,138 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0b0d12">
-<title>Vynzo — Video Preview</title>
+<title>Vynzo — 8K Video Tools</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#0b0d12;color:#fff;font-family:Arial,sans-serif}
-header{padding:20px 6%;border-bottom:1px solid #282a33}
-.logo{font-size:25px;font-weight:800;letter-spacing:1px}
+header{padding:20px 6%;border-bottom:1px solid #292c35}
+.logo{font-size:25px;font-weight:800}
 .logo span,h1 span{color:#ff414b}
-main{max-width:650px;margin:45px auto;padding:18px}
-.pill{color:#ff737b;border:1px solid #51262c;background:#211519;padding:8px 12px;border-radius:25px;font-size:11px;display:inline-block}
-h1{font-size:clamp(34px,8vw,46px);line-height:1.15;margin:22px 0 12px}
-.desc{color:#aaaeb9;line-height:1.7}
-.panel,.preview{background:#14161d;border:1px solid #2b2e38;border-radius:17px;padding:17px;margin-top:24px}
-label{display:block;font-size:14px;margin-bottom:10px}
-input{width:100%;padding:15px;background:#0b0d12;border:1px solid #383b47;border-radius:10px;color:#fff;font-size:14px}
-button{width:100%;padding:15px;border:0;border-radius:10px;background:#ff414b;color:white;font-size:15px;font-weight:bold;margin-top:12px;cursor:pointer}
-button:focus,input:focus{outline:2px solid #ff737b}
-.message{display:none;margin-top:13px;padding:12px;border-radius:9px;background:#242630;color:#eee;font-size:13px;line-height:1.6}
-.preview{display:none}
-.thumb{width:100%;display:block;border-radius:10px;aspect-ratio:16/9;object-fit:cover;background:#08090c}
-.video-frame{width:100%;aspect-ratio:16/9;border:0;border-radius:10px;background:#000}
-h2{font-size:18px}
-.small{color:#a8abb5;font-size:12px;line-height:1.6}
-footer{text-align:center;padding:25px;color:#777;font-size:12px}
+main{max-width:650px;margin:35px auto;padding:18px}
+h1{font-size:clamp(34px,8vw,46px);line-height:1.15}
+p{color:#a9acb6;line-height:1.7}
+.card{background:#14161d;border:1px solid #2b2e38;border-radius:16px;padding:18px;margin:20px 0}
+input{width:100%;padding:14px;background:#0b0d12;color:#fff;border:1px solid #383b47;border-radius:10px;margin:8px 0}
+button{width:100%;padding:14px;background:#ff414b;color:white;border:0;border-radius:10px;font-weight:bold;margin-top:10px}
+button:disabled{opacity:.5}
+video{width:100%;margin-top:14px;border-radius:10px;background:#000}
+.result{padding:12px;background:#22242c;border-radius:10px;margin-top:12px;overflow-wrap:anywhere}
+.quality{display:inline-block;padding:7px 10px;border:1px solid #ff414b;color:#ff727a;border-radius:8px;margin:4px}
+small{color:#aaa;line-height:1.6}
 </style>
 </head>
 <body>
 <header><div class="logo">VYN<span>ZO</span></div></header>
 <main>
-<div class="pill">VIDEO PREVIEW</div>
 <h1>Your Videos.<br><span>Your Quality.</span></h1>
-<p class="desc">Paste a YouTube link to preview the video on Vynzo.</p>
+<p>Check your own video resolution and keep the original file quality.</p>
 
-<section class="panel">
-<label for="url">YouTube video URL</label>
-<input id="url" type="url" placeholder="https://www.youtube.com/watch?v=...">
-<button id="previewBtn">Show Preview →</button>
-<div id="message" class="message" role="status"></div>
+<section class="card">
+<h3>Check your video</h3>
+<input id="file" type="file" accept="video/*">
+<video id="player" controls playsinline hidden></video>
+<div id="info" class="result" hidden></div>
+<button id="download" disabled>Download Original Video</button>
+<p><small>This tool does not re-encode or upscale your video. The original file is downloaded unchanged.</small></p>
 </section>
 
-<section id="preview" class="preview">
-<h2>YouTube Preview</h2>
-<img id="thumb" class="thumb" alt="YouTube video thumbnail">
-<button id="playBtn">▶ Play Video</button>
-<div id="playerBox" style="display:none;margin-top:14px">
-<iframe id="player" class="video-frame"
-title="YouTube video player"
-allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture;web-share"
-referrerpolicy="strict-origin-when-cross-origin"
-allowfullscreen></iframe>
-</div>
-<p class="small">Video playback is provided by YouTube. Some videos may not allow embedding.</p>
+<section class="card">
+<h3>Resolution guide</h3>
+<div class="quality">720p HD</div>
+<div class="quality">1080p Full HD</div>
+<div class="quality">1440p 2K</div>
+<div class="quality">2160p 4K</div>
+<div class="quality">4320p 8K</div>
+<p><small>These are resolution labels, not a claim that every video supports each quality.</small></p>
 </section>
-<p class="small" style="text-align:center;margin-top:25px">
-Preview only. This feature does not download video files.
-</p>
+
+<section class="card">
+<h3>YouTube Preview</h3>
+<p>Paste a YouTube link to open its official player.</p>
+<input id="yt" type="url" placeholder="Paste YouTube video URL">
+<button id="preview">Show YouTube Preview</button>
+<div id="ytbox"></div>
+</section>
 </main>
-<footer>© 2026 Vynzo</footer>
 
 <script>
-const input=document.getElementById('url');
-const message=document.getElementById('message');
-const preview=document.getElementById('preview');
-const thumb=document.getElementById('thumb');
+const fileInput=document.getElementById('file');
 const player=document.getElementById('player');
-const playerBox=document.getElementById('playerBox');
-let currentId='';
+const info=document.getElementById('info');
+const download=document.getElementById('download');
+let currentURL='';
 
-function showMessage(text){
-  message.textContent=text;
-  message.style.display='block';
-}
-function getVideoId(raw){
-  let u;
-  try{u=new URL(raw.trim())}catch{return null}
-  if(!['youtube.com','www.youtube.com','m.youtube.com',
-       'youtu.be','www.youtube-nocookie.com',
-       'youtube-nocookie.com'].includes(u.hostname)) return null;
-
-  let id='';
-  if(u.hostname.includes('youtu.be')){
-    id=u.pathname.split('/').filter(Boolean)[0]||'';
-  }else{
-    const parts=u.pathname.split('/').filter(Boolean);
-    if(u.pathname==='/watch') id=u.searchParams.get('v')||'';
-    else if(['shorts','embed','live'].includes(parts[0])) id=parts[1]||'';
-  }
-  return /^[A-Za-z0-9_-]{11}$/.test(id)?id:null;
-}
-
-document.getElementById('previewBtn').addEventListener('click',()=>{
-  const id=getVideoId(input.value);
-  player.src='';
-  playerBox.style.display='none';
-  preview.style.display='none';
-
-  if(!id){
-    showMessage('Valid YouTube video URL enter karo. Supported: watch, youtu.be, shorts aur embed links.');
+fileInput.addEventListener('change',()=>{
+  if(currentURL) URL.revokeObjectURL(currentURL);
+  currentURL='';
+  player.hidden=true;
+  info.hidden=true;
+  download.disabled=true;
+  const file=fileInput.files[0];
+  if(!file)return;
+  if(!file.type.startsWith('video/')){
+    info.hidden=false;
+    info.textContent='Please select a valid video file.';
     return;
   }
-
-  currentId=id;
-  thumb.src='https://i.ytimg.com/vi/'+id+'/hqdefault.jpg';
-  preview.style.display='block';
-  showMessage('Preview ready! Thumbnail neeche dikh raha hai.');
+  currentURL=URL.createObjectURL(file);
+  player.src=currentURL;
+  player.hidden=false;
+  player.onloadedmetadata=()=>{
+    const w=player.videoWidth,h=player.videoHeight;
+    let label='Other resolution';
+    if(w>=7680||h>=4320)label='8K or higher';
+    else if(w>=3840||h>=2160)label='4K';
+    else if(w>=2560||h>=1440)label='1440p / 2K';
+    else if(w>=1920||h>=1080)label='1080p / Full HD';
+    else if(w>=1280||h>=720)label='720p / HD';
+    info.hidden=false;
+    info.textContent=`Resolution: ${w} × ${h} pixels | ${label} | Size: ${(file.size/1024/1024).toFixed(1)} MB`;
+    download.disabled=false;
+  };
+  player.onerror=()=>{
+    info.hidden=false;
+    info.textContent='This video format could not be previewed by your browser.';
+  };
 });
 
-document.getElementById('playBtn').addEventListener('click',()=>{
-  if(!currentId)return;
-  player.src='https://www.youtube-nocookie.com/embed/'+currentId;
-  playerBox.style.display='block';
-  playerBox.scrollIntoView({behavior:'smooth',block:'nearest'});
+download.addEventListener('click',()=>{
+  const file=fileInput.files[0];
+  if(!file||!currentURL)return;
+  const a=document.createElement('a');
+  a.href=currentURL;
+  a.download=file.name;
+  a.click();
+});
+
+document.getElementById('preview').addEventListener('click',()=>{
+  const raw=document.getElementById('yt').value.trim();
+  const box=document.getElementById('ytbox');
+  box.replaceChildren();
+  let u;
+  try{u=new URL(raw)}catch{
+    box.textContent='Please enter a valid YouTube URL.';
+    return;
+  }
+  if(!['youtube.com','www.youtube.com','m.youtube.com','youtu.be'].includes(u.hostname)){
+    box.textContent='Please enter a YouTube video URL.';
+    return;
+  }
+  const parts=u.pathname.split('/').filter(Boolean);
+  let id=u.hostname==='youtu.be'?parts[0]:'';
+  if(u.pathname==='/watch')id=u.searchParams.get('v')||'';
+  else if(['shorts','embed','live'].includes(parts[0]))id=parts[1]||'';
+  if(!/^[A-Za-z0-9_-]{11}$/.test(id)){
+    box.textContent='Could not recognize this video URL.';
+    return;
+  }
+  const frame=document.createElement('iframe');
+  frame.src='https://www.youtube-nocookie.com/embed/'+id;
+  frame.title='YouTube video preview';
+  frame.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+  frame.allowFullscreen=true;
+  frame.style='width:100%;aspect-ratio:16/9;border:0;border-radius:10px;margin-top:14px';
+  box.append(frame);
 });
 </script>
 </body>
